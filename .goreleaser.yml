@@ -90,8 +90,8 @@ archives:
       - examples/**/*
 
 changelog:
-  sort: asc
   use: github
+  sort: asc
   filters:
     exclude:
       - '^docs:'
@@ -103,34 +103,40 @@ changelog:
       - Merge pull request
       - Merge branch
       - go mod tidy
+      - 'chore(release):'
   groups:
-    - title: Features
+    - title: '🚀 Features'
       regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
       order: 0
-    - title: 'Bug fixes'
+    - title: '🐛 Bug fixes'
       regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
       order: 1
-    - title: 'Performance improvements'
+    - title: '⚡ Performance improvements'
       regexp: '^.*?perf(\([[:word:]]+\))??!?:.+$'
       order: 2
-    - title: 'Documentation updates'
+    - title: '📚 Documentation updates'
       regexp: '^.*?docs(\([[:word:]]+\))??!?:.+$'
       order: 3
-    - title: 'Dependency updates'
-      regexp: '^.*?deps(\([[:word:]]+\))??!?:.+$'
+    - title: '🛠 Build System'
+      regexp: '^.*?build(\([[:word:]]+\))??!?:.+$'
       order: 4
+    - title: '⚙️ Continuous Integration'
+      regexp: '^.*?ci(\([[:word:]]+\))??!?:.+$'
+      order: 5
     - title: Others
       order: 999
 
 release:
   github:
     owner: xavidop
-    name: genkit-aws-bedrock
+    name: genkit-aws-bedrock-go
   name_template: "{{.ProjectName}} v{{.Version}}"
   header: |
     ## AWS Bedrock Plugin for Genkit Go {{.Version}}
     
     This release includes improvements to the AWS Bedrock integration for Firebase Genkit Go.
+    
+    **🤖 This release was automatically generated using semantic-release**
     
     ### Installation
     

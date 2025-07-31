@@ -294,13 +294,46 @@ if err != nil {
    - Consider upgrading to higher rate limits
    - Distribute requests across time
 
+## Semantic Versioning & Automated Releases
+
+This project follows [Semantic Versioning](https://semver.org/) and uses automated releases based on [Conventional Commits](https://conventionalcommits.org/).
+
+### How Releases Work
+
+1. **Automatic Version Bumping**: Commit messages determine version increments
+   - `feat:` → Minor version bump (new features)
+   - `fix:` → Patch version bump (bug fixes)  
+   - `BREAKING CHANGE:` → Major version bump (breaking changes)
+
+2. **Automated Changelog**: Release notes are automatically generated from commit messages
+
+3. **GitHub Releases**: Tagged releases with compiled artifacts and documentation
+
+### For Contributors
+
+When contributing, use conventional commit format:
+
+```bash
+# Feature (minor bump)
+feat(models): add support for Claude 3.5 Sonnet
+
+# Bug fix (patch bump)  
+fix(streaming): resolve timeout issue with long responses
+
+# Breaking change (major bump)
+feat(api)!: change model configuration interface
+
+BREAKING CHANGE: Model configuration now requires explicit region specification.
+```
+
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Follow [Conventional Commits](https://conventionalcommits.org/) format
+4. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
 
 
 ## License

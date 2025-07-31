@@ -89,11 +89,64 @@ Enhancement suggestions are welcome! Please:
 5. **Update Documentation**: Update README.md and code comments as needed
 6. **Test**: Ensure all tests pass and new functionality works correctly
 
+## Commit Message Convention
+
+This project uses [Conventional Commits](https://conventionalcommits.org/) for automatic semantic versioning and changelog generation. All commit messages must follow this format:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### Commit Types
+
+- **feat**: A new feature (triggers minor version bump)
+- **fix**: A bug fix (triggers patch version bump)
+- **docs**: Documentation only changes
+- **style**: Changes that do not affect the meaning of the code
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **perf**: A code change that improves performance
+- **test**: Adding missing tests or correcting existing tests
+- **build**: Changes that affect the build system or external dependencies
+- **ci**: Changes to our CI configuration files and scripts
+- **chore**: Other changes that don't modify src or test files
+
+### Breaking Changes
+
+Breaking changes trigger a major version bump and should be indicated with `!` after the type/scope:
+
+```
+feat(api)!: change model configuration interface
+
+BREAKING CHANGE: Model configuration now requires explicit region specification.
+```
+
+### Examples
+
+```bash
+feat(models): add support for Claude 3.5 Sonnet
+fix(streaming): resolve timeout issue with long responses
+docs(readme): update installation instructions
+test(examples): add integration tests for tool calling
+```
+
+### Automated Release Process
+
+When commits are pushed to the main branch:
+1. **Semantic Release** analyzes commit messages
+2. **Version** is automatically bumped based on commit types
+3. **Changelog** is generated and updated
+4. **GitHub Release** is created with release notes
+5. **GoReleaser** builds and publishes artifacts
+
 ## Pull Request Process
 
 1. **Update Documentation**: Ensure the README.md and other documentation are updated
 2. **Add Tests**: Include tests that cover your changes
-3. **Follow Commit Standards**: Use clear, descriptive commit messages
+3. **Follow Commit Standards**: Use conventional commit format for all commits
 4. **Create Pull Request**: Submit a pull request with a clear title and description
 5. **Address Feedback**: Respond to review comments promptly
 
