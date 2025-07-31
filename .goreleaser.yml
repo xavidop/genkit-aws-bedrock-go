@@ -72,7 +72,7 @@ builds:
 
 archives:
   - id: examples
-    format: tar.gz
+    formats: ['tar.gz']
     name_template: >-
       {{ .ProjectName }}-examples_
       {{- .Version }}_
@@ -83,7 +83,7 @@ archives:
       {{- if .Arm }}v{{ .Arm }}{{ end }}
     format_overrides:
       - goos: windows
-        format: zip
+        formats: ['zip']
     files:
       - README.md
       - LICENSE
@@ -176,7 +176,7 @@ checksum:
 
 # Snapshots (for non-tagged builds)
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  version_template: "{{ incpatch .Version }}-next"
 
 # Metadata for the release
 metadata:
