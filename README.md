@@ -42,6 +42,55 @@ go get github.com/xavidop/genkit-aws-bedrock-go
 
 ## Quick Start
 
+## Initialize the Plugin
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/firebase/genkit/go/ai"
+	"github.com/firebase/genkit/go/genkit"
+	bedrock "github.com/xavidop/genkit-aws-bedrock-go"
+)
+
+func main() {
+	ctx := context.Background()
+
+	// Initialize Genkit
+	g, err := genkit.Init(ctx,
+		genkit.WithPlugins(
+			&bedrock.Bedrock{
+				Region:                "us-east-1",
+				DefineCommonModels:    true, // Automatically define common models
+				DefineCommonEmbedders: true, // Automatically define common embedders
+			},
+		),
+		genkit.WithDefaultModel("bedrock/anthropic.claude-3-haiku-20240307-v1:0"), // Set default model
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Starting basic Bedrock example...")
+
+	// Example: Generate text (basic usage)
+	response, err := genkit.Generate(ctx, g,
+		ai.WithPrompt("What are the key benefits of using AWS Bedrock for AI applications?"),
+	)
+	if err != nil {
+		log.Printf("Error generating text: %v", err)
+	} else {
+		log.Printf("Generated response: %s", response.Text())
+	}
+
+	log.Println("Basic Bedrock example completed")
+}
+
+```
+
+## Define Models and Generate Text
 ```go
 package main
 

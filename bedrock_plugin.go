@@ -160,10 +160,12 @@ var (
 
 // Bedrock provides configuration options for the AWS Bedrock plugin.
 type Bedrock struct {
-	Region         string        // AWS region (optional, uses AWS_REGION or us-east-1)
-	MaxRetries     int           // Maximum number of retries (default: 3)
-	RequestTimeout time.Duration // Request timeout (default: 30s)
-	AWSConfig      *aws.Config   // Custom AWS config (optional)
+	Region                string        // AWS region (optional, uses AWS_REGION or us-east-1)
+	MaxRetries            int           // Maximum number of retries (default: 3)
+	RequestTimeout        time.Duration // Request timeout (default: 30s)
+	AWSConfig             *aws.Config   // Custom AWS config (optional)
+	DefineCommonModels    bool          // Whether to define common models (default: false)
+	DefineCommonEmbedders bool          // Whether to define common embedders (default: false)
 
 	mu      sync.Mutex // Mutex to control access
 	client  BedrockClient
@@ -185,9 +187,9 @@ func (b *Bedrock) Name() string {
 // This method follows the same pattern as the Ollama plugin.
 func (b *Bedrock) Init(ctx context.Context, g *genkit.Genkit) error {
 	b.mu.Lock()
-	defer b.mu.Unlock()
 
 	if b.initted {
+		b.mu.Unlock()
 		return errors.New("bedrock: Init already called")
 	}
 
@@ -223,6 +225,19 @@ func (b *Bedrock) Init(ctx context.Context, g *genkit.Genkit) error {
 	b.client = bedrockruntime.NewFromConfig(awsConfig)
 
 	b.initted = true
+
+	// Release the mutex before calling DefineCommonModels to avoid deadlock
+	b.mu.Unlock()
+
+	if b.DefineCommonModels {
+		DefineCommonModels(g, b)
+	}
+
+	if b.DefineCommonEmbedders {
+		DefineCommonEmbedders(g, b)
+	}
+
+	// Don't defer unlock since we already unlocked manually
 	return nil
 }
 
