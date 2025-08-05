@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/xavidop/genkit-aws-bedrock-go/compare/v1.0.4...v1.1.0) (2025-08-05)
+
+### 🚀 Features
+
+* addded the way to DefineModels ([2ccdf70](https://github.com/xavidop/genkit-aws-bedrock-go/commit/2ccdf708725ddbaf3ebfa64813b3b8d3a887309f))
+
 ## [1.0.4](https://github.com/xavidop/genkit-aws-bedrock-go/compare/v1.0.3...v1.0.4) (2025-08-01)
 
 ### 🐛 Bug Fixes
