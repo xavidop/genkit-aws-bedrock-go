@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0](https://github.com/xavidop/genkit-aws-bedrock-go/compare/v1.1.1...v1.2.0) (2025-08-11)
+
+### 🚀 Features
+
+* bump github.com/aws/aws-sdk-go-v2/service/bedrockruntime ([#6](https://github.com/xavidop/genkit-aws-bedrock-go/issues/6)) ([0fa3796](https://github.com/xavidop/genkit-aws-bedrock-go/commit/0fa37961f5cf9de2f267845b7da1bcb1680f07cd))
+
 ## [1.1.1](https://github.com/xavidop/genkit-aws-bedrock-go/compare/v1.1.0...v1.1.1) (2025-08-11)
 
 ### 🐛 Bug Fixes
