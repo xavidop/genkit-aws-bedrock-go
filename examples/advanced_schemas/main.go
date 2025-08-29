@@ -73,20 +73,15 @@ func createOrder(orderID string, customerName string, itemCount float64, totalAm
 func main() {
 	ctx := context.Background()
 
-	// Initialize Genkit
-	g, err := genkit.Init(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// Initialize Bedrock plugin
 	bedrockPlugin := &bedrock.Bedrock{
 		Region: "us-east-1",
 	}
 
-	if err := bedrockPlugin.Init(ctx, g); err != nil {
-		log.Fatal(err)
-	}
+	// Initialize Genkit
+	g := genkit.Init(ctx,
+		genkit.WithPlugins(bedrockPlugin),
+	)
 
 	log.Println("Starting advanced schema tool calling example...")
 

@@ -27,7 +27,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"slices"
 	"strconv"
@@ -42,6 +41,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime/types"
 	smithydoc "github.com/aws/smithy-go/document"
 	"github.com/firebase/genkit/go/ai"
+	"github.com/firebase/genkit/go/core"
 	"github.com/firebase/genkit/go/genkit"
 )
 
@@ -160,12 +160,10 @@ var (
 
 // Bedrock provides configuration options for the AWS Bedrock plugin.
 type Bedrock struct {
-	Region                string        // AWS region (optional, uses AWS_REGION or us-east-1)
-	MaxRetries            int           // Maximum number of retries (default: 3)
-	RequestTimeout        time.Duration // Request timeout (default: 30s)
-	AWSConfig             *aws.Config   // Custom AWS config (optional)
-	DefineCommonModels    bool          // Whether to define common models (default: false)
-	DefineCommonEmbedders bool          // Whether to define common embedders (default: false)
+	Region         string        // AWS region (optional, uses AWS_REGION or us-east-1)
+	MaxRetries     int           // Maximum number of retries (default: 3)
+	RequestTimeout time.Duration // Request timeout (default: 30s)
+	AWSConfig      *aws.Config   // Custom AWS config (optional)
 
 	mu      sync.Mutex // Mutex to control access
 	client  BedrockClient
@@ -185,12 +183,12 @@ func (b *Bedrock) Name() string {
 
 // Init initializes the AWS Bedrock plugin.
 // This method follows the same pattern as the Ollama plugin.
-func (b *Bedrock) Init(ctx context.Context, g *genkit.Genkit) error {
+func (b *Bedrock) Init(ctx context.Context) []core.Action {
 	b.mu.Lock()
 
 	if b.initted {
 		b.mu.Unlock()
-		return errors.New("bedrock: Init already called")
+		panic("bedrock: Init already called")
 	}
 
 	// Set defaults
@@ -217,7 +215,7 @@ func (b *Bedrock) Init(ctx context.Context, g *genkit.Genkit) error {
 			config.WithRetryMaxAttempts(b.MaxRetries),
 		)
 		if err != nil {
-			return fmt.Errorf("bedrock: failed to load AWS config: %w", err)
+			panic(fmt.Sprintf("bedrock: failed to load AWS config: %v", err))
 		}
 	}
 
@@ -226,19 +224,11 @@ func (b *Bedrock) Init(ctx context.Context, g *genkit.Genkit) error {
 
 	b.initted = true
 
-	// Release the mutex before calling DefineCommonModels to avoid deadlock
+	// Release the mutex
 	b.mu.Unlock()
 
-	if b.DefineCommonModels {
-		DefineCommonModels(g, b)
-	}
-
-	if b.DefineCommonEmbedders {
-		DefineCommonEmbedders(g, b)
-	}
-
 	// Don't defer unlock since we already unlocked manually
-	return nil
+	return []core.Action{}
 }
 
 // DefineModel defines a model in the registry.
@@ -257,7 +247,7 @@ func (b *Bedrock) DefineModel(g *genkit.Genkit, model ModelDefinition, info *ai.
 	}
 
 	// Create model metadata
-	meta := &ai.ModelInfo{
+	meta := &ai.ModelOptions{
 		Label:    provider + "-" + model.Name,
 		Supports: info.Supports,
 		Versions: info.Versions,
@@ -266,7 +256,7 @@ func (b *Bedrock) DefineModel(g *genkit.Genkit, model ModelDefinition, info *ai.
 	// Create the model function based on model type
 	switch model.Type {
 	case "image":
-		return genkit.DefineModel(g, provider, model.Name, meta, func(
+		return genkit.DefineModel(g, core.NewName(provider, model.Name), meta, func(
 			ctx context.Context,
 			input *ai.ModelRequest,
 			cb func(context.Context, *ai.ModelResponseChunk) error,
@@ -274,7 +264,7 @@ func (b *Bedrock) DefineModel(g *genkit.Genkit, model ModelDefinition, info *ai.
 			return b.generateImage(ctx, model.Name, input, cb)
 		})
 	default:
-		return genkit.DefineModel(g, provider, model.Name, meta, func(
+		return genkit.DefineModel(g, core.NewName(provider, model.Name), meta, func(
 			ctx context.Context,
 			input *ai.ModelRequest,
 			cb func(context.Context, *ai.ModelResponseChunk) error,
@@ -293,7 +283,7 @@ func (b *Bedrock) DefineEmbedder(g *genkit.Genkit, modelName string) ai.Embedder
 		panic("bedrock: Init not called")
 	}
 
-	return genkit.DefineEmbedder(g, provider, modelName, func(
+	return genkit.DefineEmbedder(g, core.NewName(provider, modelName), nil, func(
 		ctx context.Context,
 		req *ai.EmbedRequest,
 	) (*ai.EmbedResponse, error) {
@@ -303,12 +293,12 @@ func (b *Bedrock) DefineEmbedder(g *genkit.Genkit, modelName string) ai.Embedder
 
 // IsDefinedModel reports whether a model is defined.
 func IsDefinedModel(g *genkit.Genkit, name string) bool {
-	return genkit.LookupModel(g, provider, name) != nil
+	return genkit.LookupModel(g, core.NewName(provider, name)) != nil
 }
 
 // Model returns the Model with the given name.
 func Model(g *genkit.Genkit, name string) ai.Model {
-	return genkit.LookupModel(g, provider, name)
+	return genkit.LookupModel(g, core.NewName(provider, name))
 }
 
 // inferModelCapabilities infers model capabilities based on model name and type.
@@ -1484,7 +1474,7 @@ func convertStopReasonToGenkit(stopReason types.StopReason) ai.FinishReason {
 }
 
 // DefineCommonModels is a helper to define commonly used models
-func DefineCommonModels(g *genkit.Genkit, b *Bedrock) map[string]ai.Model {
+func DefineCommonModels(b *Bedrock, g *genkit.Genkit) map[string]ai.Model {
 	models := make(map[string]ai.Model)
 
 	// Text generation models
@@ -1602,7 +1592,7 @@ func DefineCommonModels(g *genkit.Genkit, b *Bedrock) map[string]ai.Model {
 }
 
 // DefineCommonEmbedders is a helper to define commonly used embedders
-func DefineCommonEmbedders(g *genkit.Genkit, b *Bedrock) map[string]ai.Embedder {
+func DefineCommonEmbedders(b *Bedrock, g *genkit.Genkit) map[string]ai.Embedder {
 	embedders := make(map[string]ai.Embedder)
 
 	// Amazon Titan Embeddings

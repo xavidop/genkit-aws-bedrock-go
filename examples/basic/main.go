@@ -29,20 +29,17 @@ import (
 func main() {
 	ctx := context.Background()
 
-	// Initialize Genkit
-	g, err := genkit.Init(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// Initialize Bedrock plugin
 	bedrockPlugin := &bedrock.Bedrock{
 		Region: "us-east-1",
 	}
 
-	if err := bedrockPlugin.Init(ctx, g); err != nil {
-		log.Fatal(err)
-	}
+	// Initialize Genkit
+	g := genkit.Init(ctx,
+		genkit.WithPlugins(bedrockPlugin),
+	)
+
+	log.Println("Genkit initialized")
 
 	log.Println("Starting basic Bedrock example...")
 
@@ -52,7 +49,7 @@ func main() {
 		Type: "chat",
 	}, nil)
 
-	log.Printf("Defined model: %v", claudeModel)
+	//log.Printf("Defined model: %v", claudeModel)
 
 	// Example: Generate text (basic usage)
 	response, err := genkit.Generate(ctx, g,

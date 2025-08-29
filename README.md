@@ -57,21 +57,17 @@ import (
 
 func main() {
 	ctx := context.Background()
+	bedrockPlugin := &bedrock.Bedrock{
+		Region: "us-east-1",
+	}
 
 	// Initialize Genkit
-	g, err := genkit.Init(ctx,
-		genkit.WithPlugins(
-			&bedrock.Bedrock{
-				Region:                "us-east-1",
-				DefineCommonModels:    true, // Automatically define common models
-				DefineCommonEmbedders: true, // Automatically define common embedders
-			},
-		),
+	g := genkit.Init(ctx,
+		genkit.WithPlugins(bedrockPlugin),
 		genkit.WithDefaultModel("bedrock/anthropic.claude-3-haiku-20240307-v1:0"), // Set default model
 	)
-	if err != nil {
-		log.Fatal(err)
-	}
+
+    bedrockPlugin.DefineCommonModels(bedrockPlugin, g) // Optional: Define common models for easy access
 
 	log.Println("Starting basic Bedrock example...")
 
@@ -105,21 +101,16 @@ import (
 
 func main() {
     ctx := context.Background()
-    
-    // Initialize Genkit
-    g, err := genkit.Init(ctx)
-    if err != nil {
-        log.Fatal(err)
-    }
-    
+
     // Initialize Bedrock plugin
     bedrockPlugin := &bedrock.Bedrock{
         Region: "us-east-1", // Optional, defaults to AWS_REGION or us-east-1
     }
     
-    if err := bedrockPlugin.Init(ctx, g); err != nil {
-        log.Fatal(err)
-    }
+    // Initialize Genkit
+    g := genkit.Init(ctx,
+        genkit.WithPlugins(bedrockPlugin),
+    )
     
     // Define a Claude 3 model
     claudeModel := bedrockPlugin.DefineModel(g, bedrock.ModelDefinition{

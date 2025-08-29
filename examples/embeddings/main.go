@@ -29,20 +29,15 @@ import (
 func main() {
 	ctx := context.Background()
 
-	// Initialize Genkit
-	g, err := genkit.Init(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// Initialize Bedrock plugin
 	bedrockPlugin := &bedrock.Bedrock{
 		Region: "us-east-1",
 	}
 
-	if err := bedrockPlugin.Init(ctx, g); err != nil {
-		log.Fatal(err)
-	}
+	// Initialize Genkit
+	g := genkit.Init(ctx,
+		genkit.WithPlugins(bedrockPlugin),
+	)
 
 	log.Println("Starting embedding generation example...")
 
@@ -61,7 +56,8 @@ func main() {
 		log.Printf("Generating embedding for text %d: %s", i+1, text)
 
 		// Generate embedding
-		response, err := ai.Embed(ctx, titanEmbedder,
+		response, err := genkit.Embed(ctx, g,
+			ai.WithEmbedder(titanEmbedder),
 			ai.WithTextDocs(text),
 		)
 
