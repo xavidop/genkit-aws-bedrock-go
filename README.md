@@ -67,7 +67,7 @@ func main() {
 		genkit.WithDefaultModel("bedrock/anthropic.claude-3-haiku-20240307-v1:0"), // Set default model
 	)
 
-    bedrockPlugin.DefineCommonModels(bedrockPlugin, g) // Optional: Define common models for easy access
+    bedrock.DefineCommonModels(bedrockPlugin, g) // Optional: Define common models for easy access
 
 	log.Println("Starting basic Bedrock example...")
 

@@ -49,8 +49,6 @@ func main() {
 		Type: "chat",
 	}, nil)
 
-	//log.Printf("Defined model: %v", claudeModel)
-
 	// Example: Generate text (basic usage)
 	response, err := genkit.Generate(ctx, g,
 		ai.WithModel(claudeModel),
