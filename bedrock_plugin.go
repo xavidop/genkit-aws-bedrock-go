@@ -41,7 +41,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime/types"
 	smithydoc "github.com/aws/smithy-go/document"
 	"github.com/firebase/genkit/go/ai"
-	"github.com/firebase/genkit/go/core"
+	"github.com/firebase/genkit/go/core/api"
 	"github.com/firebase/genkit/go/genkit"
 )
 
@@ -183,7 +183,7 @@ func (b *Bedrock) Name() string {
 
 // Init initializes the AWS Bedrock plugin.
 // This method follows the same pattern as the Ollama plugin.
-func (b *Bedrock) Init(ctx context.Context) []core.Action {
+func (b *Bedrock) Init(ctx context.Context) []api.Action {
 	b.mu.Lock()
 
 	if b.initted {
@@ -228,7 +228,7 @@ func (b *Bedrock) Init(ctx context.Context) []core.Action {
 	b.mu.Unlock()
 
 	// Don't defer unlock since we already unlocked manually
-	return []core.Action{}
+	return []api.Action{}
 }
 
 // DefineModel defines a model in the registry.
@@ -256,7 +256,7 @@ func (b *Bedrock) DefineModel(g *genkit.Genkit, model ModelDefinition, info *ai.
 	// Create the model function based on model type
 	switch model.Type {
 	case "image":
-		return genkit.DefineModel(g, core.NewName(provider, model.Name), meta, func(
+		return genkit.DefineModel(g, api.NewName(provider, model.Name), meta, func(
 			ctx context.Context,
 			input *ai.ModelRequest,
 			cb func(context.Context, *ai.ModelResponseChunk) error,
@@ -264,7 +264,7 @@ func (b *Bedrock) DefineModel(g *genkit.Genkit, model ModelDefinition, info *ai.
 			return b.generateImage(ctx, model.Name, input, cb)
 		})
 	default:
-		return genkit.DefineModel(g, core.NewName(provider, model.Name), meta, func(
+		return genkit.DefineModel(g, api.NewName(provider, model.Name), meta, func(
 			ctx context.Context,
 			input *ai.ModelRequest,
 			cb func(context.Context, *ai.ModelResponseChunk) error,
@@ -283,7 +283,7 @@ func (b *Bedrock) DefineEmbedder(g *genkit.Genkit, modelName string) ai.Embedder
 		panic("bedrock: Init not called")
 	}
 
-	return genkit.DefineEmbedder(g, core.NewName(provider, modelName), nil, func(
+	return genkit.DefineEmbedder(g, api.NewName(provider, modelName), nil, func(
 		ctx context.Context,
 		req *ai.EmbedRequest,
 	) (*ai.EmbedResponse, error) {
@@ -293,12 +293,12 @@ func (b *Bedrock) DefineEmbedder(g *genkit.Genkit, modelName string) ai.Embedder
 
 // IsDefinedModel reports whether a model is defined.
 func IsDefinedModel(g *genkit.Genkit, name string) bool {
-	return genkit.LookupModel(g, core.NewName(provider, name)) != nil
+	return genkit.LookupModel(g, api.NewName(provider, name)) != nil
 }
 
 // Model returns the Model with the given name.
 func Model(g *genkit.Genkit, name string) ai.Model {
-	return genkit.LookupModel(g, core.NewName(provider, name))
+	return genkit.LookupModel(g, api.NewName(provider, name))
 }
 
 // inferModelCapabilities infers model capabilities based on model name and type.
