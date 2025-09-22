@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0](https://github.com/xavidop/genkit-aws-bedrock-go/compare/v1.6.0...v1.7.0) (2025-09-22)
+
+### 🚀 Features
+
+* bump github.com/firebase/genkit/go from 1.0.2 to 1.0.4 ([#23](https://github.com/xavidop/genkit-aws-bedrock-go/issues/23)) ([64600bb](https://github.com/xavidop/genkit-aws-bedrock-go/commit/64600bb531ec8f013fb15d890656e6a827e0ec7e))
+
 ## [1.6.0](https://github.com/xavidop/genkit-aws-bedrock-go/compare/v1.5.0...v1.6.0) (2025-09-15)
 
 ### 🚀 Features
