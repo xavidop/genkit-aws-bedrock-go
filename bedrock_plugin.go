@@ -80,6 +80,8 @@ const (
 	FinishReasonUnknown FinishReason = "unknown"
 )
 
+const bedrockCachePointTypeKey = "bedrockCachePointType"
+
 var (
 	// Models that support images/multimodal inputs
 	multimodalModels = []string{
@@ -752,6 +754,15 @@ func (b *Bedrock) buildConverseInput(modelName string, input *ai.ModelRequest) (
 						systemPrompts = append(systemPrompts, &types.SystemContentBlockMemberText{
 							Value: part.Text,
 						})
+					} else if part.IsCustom() {
+						// Handle custom parts, the plugin currently supports NewCachePointPart
+						if cpt, ok := CachePointType(part); ok {
+							systemPrompts = append(systemPrompts, &types.SystemContentBlockMemberCachePoint{
+								Value: types.CachePointBlock{
+									Type: cpt,
+								},
+							})
+						}
 					}
 				}
 			case ai.RoleUser, ai.RoleModel, ai.RoleTool:
@@ -873,6 +884,15 @@ func (b *Bedrock) buildConverseInput(modelName string, input *ai.ModelRequest) (
 							}
 
 							contentBlocks = append(contentBlocks, toolResultBlock)
+						}
+					} else if part.IsCustom() {
+						// Handle custom parts, the plugin currently supports NewCachePointPart
+						if cpt, ok := CachePointType(part); ok {
+							contentBlocks = append(contentBlocks, &types.ContentBlockMemberCachePoint{
+								Value: types.CachePointBlock{
+									Type: cpt,
+								},
+							})
 						}
 					}
 				}
@@ -1135,9 +1155,10 @@ func (b *Bedrock) convertResponse(response *bedrockruntime.ConverseOutput, origi
 	if response.Usage != nil {
 		// Map AWS Bedrock TokenUsage to Genkit GenerationUsage
 		modelResponse.Usage = &ai.GenerationUsage{
-			InputTokens:  int(aws.ToInt32(response.Usage.InputTokens)),
-			OutputTokens: int(aws.ToInt32(response.Usage.OutputTokens)),
-			TotalTokens:  int(aws.ToInt32(response.Usage.TotalTokens)),
+			InputTokens:         int(aws.ToInt32(response.Usage.InputTokens)),
+			OutputTokens:        int(aws.ToInt32(response.Usage.OutputTokens)),
+			TotalTokens:         int(aws.ToInt32(response.Usage.TotalTokens)),
+			CachedContentTokens: int(aws.ToInt32(response.Usage.CacheReadInputTokens)),
 		}
 	}
 
@@ -1613,4 +1634,24 @@ func DefineCommonEmbedders(b *Bedrock, g *genkit.Genkit) map[string]ai.Embedder 
 	embedders["cohere-multilingual"] = cohereMultilingual
 
 	return embedders
+}
+
+// NewCachePointPart creates and returns a new ai.Part instance representing a cache point part
+// with the default cache point type. A cache point should be inserted after a big static prompt
+// that is reused across multiple requests to optimize token usage.
+func NewCachePointPart() *ai.Part {
+	return ai.NewCustomPart(map[string]any{
+		bedrockCachePointTypeKey: types.CachePointTypeDefault,
+	})
+}
+
+// CachePointType retrieves the CachePointType value from the Custom field of the given ai.Part.
+// It returns the CachePointType and a boolean indicating whether the value was found and successfully asserted.
+func CachePointType(part *ai.Part) (types.CachePointType, bool) {
+	cachePointTypeVal, ok := part.Custom[bedrockCachePointTypeKey]
+	if !ok {
+		return "", false
+	}
+	cpt, ok := cachePointTypeVal.(types.CachePointType)
+	return cpt, ok
 }

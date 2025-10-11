@@ -221,6 +221,7 @@ The repository includes comprehensive examples:
 - **`examples/embeddings/`** - Text embeddings and similarity
 - **`examples/multimodal/`** - Vision models with image inputs
 - **`examples/advanced_schemas/`** - Complex tool schemas and validation
+- **`examples/prompt_caching`** - Several calls with prompt caching enabled to save costs
 
 ### Running Examples
 
@@ -308,6 +309,24 @@ if err != nil {
     }
     return
 }
+```
+
+### Prompt Caching
+
+```go
+// Prompt caching helps to save input token costs and reduce latency for repeated contexts.
+// The first cache point must be defined after 1,024 tokens for most models.
+// More about prompt caching: https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html
+response, err := genkit.Generate(ctx, g,
+    ai.WithMessages(
+        ai.NewSystemMessage(
+            ai.NewTextPart(sysprompt), // A big system prompt that is reused
+            bedrock.NewCachePointPart(), // A cache point after the system prompt
+
+        ),
+        ai.NewUserTextMessage(input),
+    ),
+)
 ```
 
 ## Troubleshooting
