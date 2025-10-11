@@ -755,6 +755,7 @@ func (b *Bedrock) buildConverseInput(modelName string, input *ai.ModelRequest) (
 							Value: part.Text,
 						})
 					} else if part.IsCustom() {
+						// Handle custom parts, the plugin currently supports NewCachePointPart
 						if cpt, ok := CachePointType(part); ok {
 							systemPrompts = append(systemPrompts, &types.SystemContentBlockMemberCachePoint{
 								Value: types.CachePointBlock{
@@ -885,6 +886,7 @@ func (b *Bedrock) buildConverseInput(modelName string, input *ai.ModelRequest) (
 							contentBlocks = append(contentBlocks, toolResultBlock)
 						}
 					} else if part.IsCustom() {
+						// Handle custom parts, the plugin currently supports NewCachePointPart
 						if cpt, ok := CachePointType(part); ok {
 							contentBlocks = append(contentBlocks, &types.ContentBlockMemberCachePoint{
 								Value: types.CachePointBlock{
@@ -1634,12 +1636,17 @@ func DefineCommonEmbedders(b *Bedrock, g *genkit.Genkit) map[string]ai.Embedder 
 	return embedders
 }
 
+// NewCachePointPart creates and returns a new ai.Part instance representing a cache point part
+// with the default cache point type. A cache point should be inserted after a big static prompt
+// that is reused across multiple requests to optimize token usage.
 func NewCachePointPart() *ai.Part {
 	return ai.NewCustomPart(map[string]any{
 		bedrockCachePointTypeKey: types.CachePointTypeDefault,
 	})
 }
 
+// CachePointType retrieves the CachePointType value from the Custom field of the given ai.Part.
+// It returns the CachePointType and a boolean indicating whether the value was found and successfully asserted.
 func CachePointType(part *ai.Part) (types.CachePointType, bool) {
 	cachePointTypeVal, ok := part.Custom[bedrockCachePointTypeKey]
 	if !ok {
