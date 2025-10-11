@@ -80,6 +80,8 @@ const (
 	FinishReasonUnknown FinishReason = "unknown"
 )
 
+const bedrockCachePointTypeKey = "bedrockCachePointType"
+
 var (
 	// Models that support images/multimodal inputs
 	multimodalModels = []string{
@@ -752,6 +754,14 @@ func (b *Bedrock) buildConverseInput(modelName string, input *ai.ModelRequest) (
 						systemPrompts = append(systemPrompts, &types.SystemContentBlockMemberText{
 							Value: part.Text,
 						})
+					} else if part.IsCustom() {
+						if cpt, ok := CachePointType(part); ok {
+							systemPrompts = append(systemPrompts, &types.SystemContentBlockMemberCachePoint{
+								Value: types.CachePointBlock{
+									Type: cpt,
+								},
+							})
+						}
 					}
 				}
 			case ai.RoleUser, ai.RoleModel, ai.RoleTool:
@@ -873,6 +883,14 @@ func (b *Bedrock) buildConverseInput(modelName string, input *ai.ModelRequest) (
 							}
 
 							contentBlocks = append(contentBlocks, toolResultBlock)
+						}
+					} else if part.IsCustom() {
+						if cpt, ok := CachePointType(part); ok {
+							contentBlocks = append(contentBlocks, &types.ContentBlockMemberCachePoint{
+								Value: types.CachePointBlock{
+									Type: cpt,
+								},
+							})
 						}
 					}
 				}
@@ -1135,9 +1153,10 @@ func (b *Bedrock) convertResponse(response *bedrockruntime.ConverseOutput, origi
 	if response.Usage != nil {
 		// Map AWS Bedrock TokenUsage to Genkit GenerationUsage
 		modelResponse.Usage = &ai.GenerationUsage{
-			InputTokens:  int(aws.ToInt32(response.Usage.InputTokens)),
-			OutputTokens: int(aws.ToInt32(response.Usage.OutputTokens)),
-			TotalTokens:  int(aws.ToInt32(response.Usage.TotalTokens)),
+			InputTokens:         int(aws.ToInt32(response.Usage.InputTokens)),
+			OutputTokens:        int(aws.ToInt32(response.Usage.OutputTokens)),
+			TotalTokens:         int(aws.ToInt32(response.Usage.TotalTokens)),
+			CachedContentTokens: int(aws.ToInt32(response.Usage.CacheReadInputTokens)),
 		}
 	}
 
@@ -1613,4 +1632,19 @@ func DefineCommonEmbedders(b *Bedrock, g *genkit.Genkit) map[string]ai.Embedder 
 	embedders["cohere-multilingual"] = cohereMultilingual
 
 	return embedders
+}
+
+func NewCachePointPart() *ai.Part {
+	return ai.NewCustomPart(map[string]any{
+		bedrockCachePointTypeKey: types.CachePointTypeDefault,
+	})
+}
+
+func CachePointType(part *ai.Part) (types.CachePointType, bool) {
+	cachePointTypeVal, ok := part.Custom[bedrockCachePointTypeKey]
+	if !ok {
+		return "", false
+	}
+	cpt, ok := cachePointTypeVal.(types.CachePointType)
+	return cpt, ok
 }
