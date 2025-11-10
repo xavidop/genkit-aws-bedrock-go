@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0](https://github.com/xavidop/genkit-aws-bedrock-go/compare/v1.8.1...v1.9.0) (2025-11-10)
+
+### 🚀 Features
+
+* bump deps ([bdfaea5](https://github.com/xavidop/genkit-aws-bedrock-go/commit/bdfaea500d5d84e9426f989978222a281da5eef2))
+
 ## [1.8.1](https://github.com/xavidop/genkit-aws-bedrock-go/compare/v1.8.0...v1.8.1) (2025-10-20)
 
 ### ⚙️ Continuous Integration
