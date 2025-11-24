@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.31.20
 	github.com/aws/aws-sdk-go-v2/service/bedrockruntime v1.42.4
 	github.com/aws/smithy-go v1.23.2
-	github.com/firebase/genkit/go v1.1.0
+	github.com/firebase/genkit/go v1.2.0
 )
 
 require (
