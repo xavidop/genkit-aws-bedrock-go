@@ -14,7 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-// Package bedrock provides a comprehensive AWS Bedrock plugin for Firebase Genkit Go.
+// Package bedrock provides a comprehensive AWS Bedrock plugin for Genkit Go.
 // This plugin supports text generation, image generation, and embedding capabilities
 // using AWS Bedrock foundation models via the Converse API.
 //

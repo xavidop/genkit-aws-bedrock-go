@@ -1,6 +1,6 @@
 # AWS Bedrock Plugin for Genkit Go
 
-A comprehensive AWS Bedrock plugin for Firebase Genkit Go that provides text generation, image generation, and embedding capabilities using AWS Bedrock foundation models via the Converse API.
+A comprehensive AWS Bedrock plugin for Genkit Go that provides text generation, image generation, and embedding capabilities using AWS Bedrock foundation models via the Converse API.
 
 ## Features
 
@@ -401,10 +401,10 @@ Apache 2.0 - see [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- Firebase Genkit team for the excellent Go framework
+- Genkit team for the excellent Go framework
 - AWS Bedrock team for the comprehensive AI model platform  
 - The open source community for inspiration and feedback
 
 ---
 
-**Built with ❤️ for the Firebase Genkit Go community**
+**Built with ❤️ for the Genkit Go community**

@@ -1,7 +1,7 @@
 {
   "name": "genkit-aws-bedrock-go",
   "version": "0.0.0-development",
-  "description": "AWS Bedrock Plugin for Firebase Genkit Go",
+  "description": "AWS Bedrock Plugin for Genkit Go",
   "repository": {
     "type": "git",
     "url": "https://github.com/xavidop/genkit-aws-bedrock-go.git"
@@ -14,8 +14,7 @@
     "bedrock",
     "golang",
     "ai",
-    "llm",
-    "firebase"
+    "llm"
   ],
   "private": true,
   "devDependencies": {
