@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.3](https://github.com/xavidop/genkit-aws-bedrock-go/compare/v1.10.2...v1.10.3) (2025-12-08)
+
+### ⚙️ Continuous Integration
+
+* **deps:** bump github/codeql-action from 3 to 4 ([#56](https://github.com/xavidop/genkit-aws-bedrock-go/issues/56)) ([8838ee2](https://github.com/xavidop/genkit-aws-bedrock-go/commit/8838ee2fa1f5143df60a4e4ede1c5a52a946fc07))
+
 ## [1.10.2](https://github.com/xavidop/genkit-aws-bedrock-go/compare/v1.10.1...v1.10.2) (2025-12-08)
 
 ### ⚙️ Continuous Integration
